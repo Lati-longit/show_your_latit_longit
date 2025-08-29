@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Location Test</title>
+</head>
+<body>
+  <h2>點擊按鈕以分享位置</h2>
+  <button onclick="getLocation()">分享我的位置</button>
+
+  <script>
+    async function getLocation() {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(sendToDiscord, showError);
+      } else {
+        alert("Geolocation is not supported by this browser.");
+      }
+    }
+
+    async function sendToDiscord(position) {
+      const latitude = position.coords.latitude;
+      const longitude = position.coords.longitude;
+
+      // 你的 Discord Webhook URL
+      const webhookURL = "https://discord.com/api/webhooks/1410170674042900501/alm9MfQGxc0GEx_ia8ITyVA4s_7LXg_eIwpM4F7CIaFSdZ919R12zQ0tLxF5Zo2lYB4x";
+
+      const data = {
+        content: `📍 使用者位置: \nLatitude: ${latitude}\nLongitude: ${longitude}\nGoogle Maps: https://www.google.com/maps?q=${latitude},${longitude}`
+      };
+
+      await fetch(webhookURL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+      });
+
+      alert("已將位置發送至 Discord ✅");
+    }
+
+    function showError(error) {
+      switch(error.code) {
+        case error.PERMISSION_DENIED:
+          alert("使用者拒絕了位置請求。");
+          break;
+        case error.POSITION_UNAVAILABLE:
+          alert("位置資訊不可用。");
+          break;
+        case error.TIMEOUT:
+          alert("請求超時。");
+          break;
+        default:
+          alert("發生未知錯誤。");
+      }
+    }
+  </script>
+</body>
+</html>
